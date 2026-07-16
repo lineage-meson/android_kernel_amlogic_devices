@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: GPL-2.0
+
+load("//vendor/amlogic/devices/kleaf:device.bzl", "amlogic_kernel_device")
+load("//vendor/amlogic/dhd-driver:defs.bzl", "bcmdhd_591_sdio_module")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+bcmdhd_591_sdio_module(name = "wlan_ap6356", kernel_build = ":kvim1s")
+
+amlogic_kernel_device(
+    target = "kvim1s",
+    build_config = "build.config.ne.khadas",
+    target_dtb = [
+        "kvim1s.dtb",
+    ],
+    kernel_module_outs = [
+        "drivers/rtc/rtc-hym8563.ko",
+        "common_drivers/drivers/misc/khadas-mcu.ko",
+    ],
+    kernel_modules = [
+        ":wlan_ap6356",
+    ],
+)
