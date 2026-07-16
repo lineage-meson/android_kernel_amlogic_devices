@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: GPL-2.0
+
+load("//vendor/amlogic/devices/kleaf:device.bzl", "amlogic_kernel_device")
+load("//vendor/amlogic/unisoc-drivers/uwe5621ds:defs.bzl", "uwe5621ds_module")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+uwe5621ds_module(name = "wlan_uwe5621", kernel_build = ":tifa")
+
+amlogic_kernel_device(
+    target = "tifa",
+    build_config = "build.config.ne",
+    target_dtb = [
+        "s4_s905y4_dv9135.dtb",
+    ],
+    kernel_module_outs = [
+        "drivers/rtc/rtc-hym8563.ko",
+    ],
+    kernel_modules = [
+        ":wlan_uwe5621",
+    ],
+)
