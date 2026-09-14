@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: GPL-2.0
+
+load("//vendor/amlogic/devices/kleaf:device.bzl", "amlogic_kernel_device")
+load("//vendor/amlogic/dhd-driver:defs.bzl", "bcmdhd_591_sdio_module")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+bcmdhd_591_sdio_module(name = "wlan_ap6356", kernel_build = ":wade")
+
+amlogic_kernel_device(
+    target = "wade",
+    build_config = "build.config.g12",
+    target_dtb = [
+        "g12a_s905x2_u212_sti6130d3x0.dtb",
+    ],
+    target_dtbo = [
+        "sti6140d350_overlay.dtb",
+    ],
+    kernel_modules = [
+        ":wlan_ap6356",
+    ],
+)
