@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0
+
+load("//vendor/amlogic/devices/kleaf:device.bzl", "amlogic_kernel_device")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+amlogic_kernel_device(
+    target = "odroidc4",
+    build_config = "build.config.g12",
+    target_dtb = [
+        "sm1_s905x3_odroidc4.dtb",
+    ],
+)
