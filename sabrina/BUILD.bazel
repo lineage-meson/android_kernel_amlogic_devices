@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: GPL-2.0
+
+load("//vendor/amlogic/devices/kleaf:device.bzl", "amlogic_kernel_device")
+load("//vendor/amlogic/dhd-driver:defs.bzl", "bcmdhd_591_sdio_module")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+bcmdhd_591_sdio_module(name = "wlan_ap6356", kernel_build = ":sabrina")
+
+amlogic_kernel_device(
+    target = "sabrina",
+    build_config = "build.config.g12.sabrina",
+    target_dtb = [
+        "sm1_s905d3_sabrina.dtb",
+    ],
+    kernel_module_outs = [
+        "drivers/hwmon/hwmon.ko",
+        "drivers/hwmon/ntc_thermistor.ko",
+        "drivers/leds/leds-pwm.ko",
+        "common_drivers/drivers/firmware/amlogic-bl40.ko",
+        "common_drivers/drivers/google/google_usb_power_monitor.ko",
+        "common_drivers/drivers/google/usb/typec/tcpm/google_tcpci.ko",
+        "common_drivers/drivers/google/usb/typec/tcpm/google_tcpci_rt1711h.ko",
+        "common_drivers/drivers/google/usb/typec/tcpm/google_tcpm.ko",
+    ],
+    kernel_modules = [
+        ":wlan_ap6356",
+    ],
+)
