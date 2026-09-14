@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: GPL-2.0
+
+load("//vendor/amlogic/devices/kleaf:device.bzl", "amlogic_kernel_device")
+load("//vendor/amlogic/dhd-driver:defs.bzl", "bcmdhd_591_sdio_module")
+load("//vendor/amlogic/realtek-drivers/8822cs:defs.bzl", "rtl8822cs_module")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+bcmdhd_591_sdio_module(name = "wlan_ap6356", kernel_build = ":nicepool")
+
+rtl8822cs_module(name = "wlan_rtl8822cs", kernel_build = ":nicepool")
+
+amlogic_kernel_device(
+    target = "nicepool",
+    build_config = "build.config.g12",
+    target_dtb = [
+        "g12a_s905x2_u212_nicepool.dtb",
+    ],
+    kernel_modules = [
+        ":wlan_ap6356",
+        ":wlan_rtl8822cs",
+    ],
+)
