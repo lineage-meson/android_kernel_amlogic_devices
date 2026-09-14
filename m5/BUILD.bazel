@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: GPL-2.0
+
+load("//vendor/amlogic/devices/kleaf:device.bzl", "amlogic_kernel_device")
+load("//vendor/amlogic/bt-modules/realtek:defs.bzl", "realtek_btusb_module")
+load("//vendor/amlogic/realtek-drivers/8822cs:defs.bzl", "rtl8822cs_module")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+realtek_btusb_module(name = "realtek_btusb", kernel_build = ":m5",)
+
+rtl8822cs_module(name = "wlan_rtl8822cs", kernel_build = ":m5")
+
+amlogic_kernel_device(
+    target = "m5",
+    build_config = "build.config.g12",
+    target_dtb = [
+        "sm1_s905x3_bananapim5.dtb",
+    ],
+    target_dtbo = [
+        "android_overlay_dt.dtbo",
+        "sm1_s905x3_bananapim5_wifi_overlay.dtbo",
+    ],
+    kernel_modules = [
+        ":realtek_btusb",
+        ":wlan_rtl8822cs",
+    ],
+)
