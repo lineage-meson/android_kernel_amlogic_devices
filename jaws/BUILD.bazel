@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: GPL-2.0
+
+load("//vendor/amlogic/bt-modules:defs.bzl", "btmtk_usb_module")
+load("//vendor/amlogic/devices/kleaf:device.bzl", "amlogic_kernel_device")
+load("//vendor/amlogic/mtk-drivers/mt7663u/wlan_driver:defs.bzl", "mt7663u_module")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+btmtk_usb_module(name = "bt_btmtk_usb", kernel_build = ":jaws")
+
+mt7663u_module(name = "wlan_mt7663u", kernel_build = ":jaws")
+
+amlogic_kernel_device(
+    target = "jaws",
+    build_config = "build.config.ne",
+    target_dtb = [
+        "sc2_s905x4_jaws.dtb",
+    ],
+    kernel_module_outs = [
+        "drivers/rtc/rtc-hym8563.ko",
+    ],
+    kernel_modules = [
+        ":bt_btmtk_usb",
+        ":wlan_mt7663u",
+    ],
+)
