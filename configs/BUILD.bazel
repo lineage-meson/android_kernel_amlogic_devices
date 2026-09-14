@@ -4,5 +4,6 @@ package(
     default_visibility = ["//visibility:public"],
 )
 
+exports_files(["build.config.g12"])
 exports_files(["build.config.ne"])
 exports_files(["build.config.ne.khadas"])

@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-2.0
+
+load("//vendor/amlogic/devices/kleaf:device.bzl", "amlogic_kernel_device")
+load("//vendor/amlogic/dhd-driver:defs.bzl", "bcmdhd_591_sdio_module")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+bcmdhd_591_sdio_module(name = "wlan_ap6356", kernel_build = ":deadpool")
+
+amlogic_kernel_device(
+    target = "deadpool",
+    build_config = "build.config.g12",
+    target_dtb = [
+        "g12a_s905y2_deadpool.dtb",
+    ],
+    kernel_modules = [
+        ":wlan_ap6356",
+    ],
+)
