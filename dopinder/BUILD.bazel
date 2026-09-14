@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-2.0
+
+load("//vendor/amlogic/devices/kleaf:device.bzl", "amlogic_kernel_device")
+load("//vendor/amlogic/realtek-drivers/8822cs:defs.bzl", "rtl8822cs_module")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+rtl8822cs_module(name = "wlan_rtl8822cs", kernel_build = ":dopinder")
+
+amlogic_kernel_device(
+    target = "dopinder",
+    build_config = "build.config.g12",
+    target_dtb = [
+        "g12a_s905x2_u212_sti6130d3x0.dtb",
+    ],
+    kernel_modules = [
+        ":wlan_rtl8822cs",
+    ],
+)
