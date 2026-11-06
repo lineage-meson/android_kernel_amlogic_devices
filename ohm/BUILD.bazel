@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: GPL-2.0
+
+load("//vendor/amlogic/devices/kleaf:device.bzl", "amlogic_kernel_device")
+load("//vendor/amlogic/qca6174-driver:defs.bzl", "qca6174_sdio_module")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+qca6174_sdio_module(name = "wlan_qca6174", kernel_build = ":ohm")
+
+amlogic_kernel_device(
+    target = "ohm",
+    build_config = "build.config.ne",
+    target_dtb = [
+        "sc2_s905x4_ah212_drm.dtb",
+    ],
+    kernel_module_outs = [
+        "drivers/rtc/rtc-hym8563.ko",
+    ],
+    kernel_modules = [
+        ":wlan_qca6174",
+    ],
+)

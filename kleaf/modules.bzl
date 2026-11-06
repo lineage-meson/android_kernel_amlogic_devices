@@ -40,7 +40,6 @@ TARGET_MODULES = [
     "drivers/net/mdio/mdio-mux.ko",
     "drivers/net/pcs/pcs_xpcs.ko",
     "drivers/regulator/gpio-regulator.ko",
-    "drivers/rtc/rtc-hym8563.ko",
     "fs/ntfs3/ntfs3.ko",
     "net/mac80211/mac80211.ko",
     "net/wireless/cfg80211.ko",
@@ -104,18 +103,6 @@ COMMON_DRIVERS_MODULES = [
     "common_drivers/sound/soc/codecs/amlogic/amlogic-snd-codec-tl1.ko",
 ]
 
-MODULES_OUT_REMOVE = [
-    "fs/ntfs3/ntfs3.ko",
-    "common_drivers/drivers/drm/aml_drm.ko",
-    "common_drivers/drivers/media/camera/amlogic-camera.ko",
-    "common_drivers/drivers/clk/meson/amlogic-clk-soc-s6.ko",
-    "common_drivers/drivers/clk/meson/amlogic-clk-soc-s7.ko",
-    "common_drivers/drivers/clk/meson/amlogic-clk-soc-s7d.ko",
-    "common_drivers/drivers/gpio/amlogic-pinctrl-soc-s6.ko",
-    "common_drivers/drivers/gpio/amlogic-pinctrl-soc-s7.ko",
-    "common_drivers/drivers/gpio/amlogic-pinctrl-soc-s7d.ko",
-]
-
 SYSTEM_DLKM_MODULES = [
     "mm/zsmalloc.ko",
     "drivers/block/zram/zram.ko",
@@ -128,6 +115,20 @@ SYSTEM_DLKM_MODULES = [
     "drivers/net/usb/cdc_ncm.ko",
     "drivers/net/usb/r8153_ecm.ko",
     "lib/crypto/libarc4.ko",
+]
+
+PLATFORM_MODULES = TARGET_MODULES + COMMON_DRIVERS_MODULES + SYSTEM_DLKM_MODULES
+
+MODULES_OUT_REMOVE = [
+    "fs/ntfs3/ntfs3.ko",
+    "common_drivers/drivers/drm/aml_drm.ko",
+    "common_drivers/drivers/media/camera/amlogic-camera.ko",
+    "common_drivers/drivers/clk/meson/amlogic-clk-soc-s6.ko",
+    "common_drivers/drivers/clk/meson/amlogic-clk-soc-s7.ko",
+    "common_drivers/drivers/clk/meson/amlogic-clk-soc-s7d.ko",
+    "common_drivers/drivers/gpio/amlogic-pinctrl-soc-s6.ko",
+    "common_drivers/drivers/gpio/amlogic-pinctrl-soc-s7.ko",
+    "common_drivers/drivers/gpio/amlogic-pinctrl-soc-s7d.ko",
 ]
 
 GKI_MODULES_REMOVE = [
