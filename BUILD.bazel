@@ -1,0 +1,143 @@
+# SPDX-License-Identifier: GPL-2.0
+
+load("@rules_pkg//pkg:install.bzl", "pkg_install")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files", "strip_prefix")
+load(
+    "//build/kernel/kleaf:kernel.bzl",
+    "initramfs",
+    "kernel_abi",
+    "kernel_build",
+    "kernel_modules_install",
+)
+load(
+    "//common:modules.bzl",
+    "get_gki_modules_list",
+    "get_kunit_modules_list",
+)
+load(
+    "//vendor/amlogic/devices:modules.bzl",
+    "MESON_MODULE_OUTS",
+    "MESON_WATCHDOG_MODULE_OUTS",
+)
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+kernel_build(
+    name = "meson_no_kgdb",
+    srcs = ["//common:kernel_aarch64_sources"],
+    outs = [
+        "Image",
+        "System.map",
+        "arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dtb",
+        "arch/arm64/boot/dts/amlogic/meson-g12b-a311d-khadas-vim3.dtb",
+        "arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2-plus.dtb",
+        "arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtb",
+        "arch/arm64/boot/dts/amlogic/meson-sm1-khadas-vim3l.dtb",
+        "arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dtb",
+        "modules.builtin",
+        "modules.builtin.modinfo",
+        "vmlinux",
+        "vmlinux.symvers",
+    ],
+    arch = "arm64",
+    defconfig = "arch/arm64/configs/gki_defconfig",
+    make_goals = [
+        "Image",
+        "modules",
+        "amlogic/meson-g12a-sei510.dtb",
+        "amlogic/meson-sm1-sei610.dtb",
+        "amlogic/meson-g12b-a311d-khadas-vim3.dtb",
+        "amlogic/meson-sm1-khadas-vim3l.dtb",
+        "amlogic/meson-g12b-odroid-n2.dtb",
+        "amlogic/meson-g12b-odroid-n2-plus.dtb",
+    ],
+    makefile = "//common:Makefile",
+    module_outs = get_gki_modules_list("arm64") + get_kunit_modules_list("arm64") + MESON_MODULE_OUTS + MESON_WATCHDOG_MODULE_OUTS,
+    pre_defconfig_fragments = ["arch/arm64/configs/amlogic_gki.fragment"],
+)
+
+kernel_build(
+    name = "meson_kgdb",
+    srcs = ["//common:kernel_aarch64_sources"],
+    outs = [
+        "Image",
+        "System.map",
+        "arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dtb",
+        "arch/arm64/boot/dts/amlogic/meson-g12b-a311d-khadas-vim3.dtb",
+        "arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2-plus.dtb",
+        "arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtb",
+        "arch/arm64/boot/dts/amlogic/meson-sm1-khadas-vim3l.dtb",
+        "arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dtb",
+        "modules.builtin",
+        "modules.builtin.modinfo",
+        "vmlinux",
+        "vmlinux.symvers",
+    ],
+    arch = "arm64",
+    defconfig = "arch/arm64/configs/gki_defconfig",
+    make_goals = [
+        "Image",
+        "modules",
+        "amlogic/meson-g12a-sei510.dtb",
+        "amlogic/meson-sm1-sei610.dtb",
+        "amlogic/meson-g12b-a311d-khadas-vim3.dtb",
+        "amlogic/meson-sm1-khadas-vim3l.dtb",
+        "amlogic/meson-g12b-odroid-n2.dtb",
+        "amlogic/meson-g12b-odroid-n2-plus.dtb",
+    ],
+    makefile = "//common:Makefile",
+    module_outs = get_gki_modules_list("arm64") + get_kunit_modules_list("arm64") + MESON_MODULE_OUTS,
+    pre_defconfig_fragments = ["arch/arm64/configs/amlogic_gki.fragment"],
+)
+
+alias(
+    name = "meson",
+    actual = select({
+        "//build/kernel/kleaf:kgdb_is_true": "meson_kgdb",
+        "//conditions:default": "meson_no_kgdb",
+    }),
+)
+
+kernel_modules_install(
+    name = "meson_modules_install",
+    kernel_build = ":meson",
+)
+
+genrule(
+    name = "meson_lz4",
+    srcs = [":meson"],
+    outs = ["Image.lz4"],
+    cmd = """
+        # Find the Image file (not Image.gz or Image.lz4)
+        IMAGE_FILE=""
+        for f in $(locations :meson); do
+            if [[ $$(basename $$f) == "Image" ]]; then
+                IMAGE_FILE=$$f
+                break
+            fi
+        done
+        if [ -z "$$IMAGE_FILE" ]; then
+            echo "Error: Could not find Image file"
+            exit 1
+        fi
+        lz4 -f -12 --favor-decSpeed $$IMAGE_FILE $@
+    """,
+)
+
+pkg_files(
+    name = "meson_dist_files",
+    srcs = [
+        ":meson",
+        ":meson_lz4",
+        ":meson_modules_install",
+    ],
+    strip_prefix = strip_prefix.files_only(),
+)
+
+pkg_install(
+    name = "meson_dist",
+    srcs = [":meson_dist_files"],
+    destdir = "out/amlogic_meson/dist",
+)
