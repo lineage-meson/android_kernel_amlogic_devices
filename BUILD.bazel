@@ -4,9 +4,11 @@ load("@rules_pkg//pkg:install.bzl", "pkg_install")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_files", "strip_prefix")
 load(
     "//build/kernel/kleaf:kernel.bzl",
+    "dtbo",
     "initramfs",
     "kernel_abi",
     "kernel_build",
+    "kernel_dtstree",
     "kernel_modules_install",
 )
 load(
@@ -126,6 +128,21 @@ genrule(
     """,
 )
 
+dtbo(
+    name = "meson_dtbo",
+    kernel_build = ":meson",
+    srcs = [
+        ":dtbo_amlogic",
+    ],
+)
+
+pkg_files(
+    name = "meson_dtbo_files",
+    srcs = [":meson_dtbo"],
+    prefix = "dtbo",
+    strip_prefix = strip_prefix.files_only(),
+)
+
 pkg_files(
     name = "meson_dist_files",
     srcs = [
@@ -138,6 +155,9 @@ pkg_files(
 
 pkg_install(
     name = "meson_dist",
-    srcs = [":meson_dist_files"],
+    srcs = [
+        ":meson_dist_files",
+        ":meson_dtbo_files",
+    ],
     destdir = "out/amlogic_meson/dist",
 )
